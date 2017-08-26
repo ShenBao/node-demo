@@ -2,19 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title></title>
 </head>
 <body>
-<ul id="content">
+    <ul id="content">
 
-</ul>
+    </ul>
 <script>
-    function show1(data){
+    function show(data){
         console.log(data);
     }
-    //1. 创建一个script元素
-    var script = document.createElement('script');
-    script.src = 'http://localhost:8080/books?callback=show1&name=zfpx4';// show(['node.js','java'])
+    //1、创建script元素
+    var script=document.createElement('script');
+    script.src='http://localhost:8080/books'; //show(['node.js','java'])
     document.body.appendChild(script);
 </script>
 </body>
