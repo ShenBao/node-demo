@@ -26,7 +26,7 @@ var server = http.createServer(function(request,response){
 
 
 });
-//在8080端口上进行监听 ，主机名是localhost
+//在80端口上进行监听 ，主机名是localhost
 // 0 - 65535
 // ps -ef | grep node
 server.listen(80,'localhost');
