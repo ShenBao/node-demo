@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2016/3/5.
- */
 
 //buf.toString([encoding[, start[, end]]]);
 //字符串转buffer

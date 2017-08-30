@@ -1,7 +1,7 @@
 function say(name,word){
     console.log(this.name,name,word);
 }
-var obj = {name:'zfpx'};
+var obj = {name:'ShenBao'};
 Function.prototype.bind = function(obj){
   var self = this;
     var args = Array.prototype.slice.call(arguments,1);
