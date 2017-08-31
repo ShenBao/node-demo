@@ -1,31 +1,32 @@
 var express = require("express");
-//数据库引用
-var MongoClient = require('mongodb').MongoClient;
-var assert = require('assert');
-
 var app = express();
+var MongoClient = require('mongodb').MongoClient;
 
-//数据库连接的地址，最后的斜杠表示数据库名字
-var shujukuURL = 'mongodb://localhost:27017/itcast';
 
 app.get("/",function(req,res){
-    //连接数据库，这是一个异步的操作
-    MongoClient.connect(shujukuURL, function(err, db) {
-        res.writeHead(200,{'Content-Type':'text/html;charset=utf-8'});
+    //url就是数据库的地址。/表示数据库
+    //假如数据库不存在，没有关系，程序会帮你自动创建一个数据库
+    var url = 'mongodb://localhost:27017/test';
+    //连接数据库
+    MongoClient.connect(url, function(err, db) {
+        //回调函数表示连接成功做的事情，db参数就是连接上的数据库实体
         if(err){
-            res.send("数据库连接失败");
+            console.log("数据库连接失败");
             return;
         }
-        res.write("恭喜，数据库已经成功连接 \n");
-        db.collection("teacher").insertOne({"name":"ShenBao"},function(err,result){
-            console.log(result)
+        console.log("数据库连接成功");
+        //插入数据，集合如果不存在，也没有关系，程序会帮你创建
+        db.collection('student').insertOne({
+            "name" : "哈哈",
+            "age" : parseInt(Math.random() * 100 + 10)
+        }, function(err, result) {
             if(err){
-                res.send("数据库写入失败");
+                console.log("插入失败");
                 return;
             }
-            res.write("恭喜，数据已经成功插入");
-            res.end();
-            //关闭数据库
+            //插入之后做的事情，result表示插入结果。
+            console.log(result);
+            res.send(JSON.stringify(result));
             db.close();
         });
     });

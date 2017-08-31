@@ -1,82 +1,63 @@
 var express = require("express");
-var MongoClient = require('mongodb').MongoClient;
-var assert = require('assert');
-
 var app = express();
+var db = require("./model/db.js");
 
-app.set("view engine","ejs");
-
-//数据库连接的地址，最后的斜杠表示数据库名字
-var shujukuURL = 'mongodb://localhost:27017/itcast';
-
-app.get("/",function(req,res){
-    //先连接数据库，对数据库的所有操作，都要写在他的回调函数里面。
-    MongoClient.connect(shujukuURL, function(err, db) {
+//插入数据，使用我们自己封装db模块，就是DAO。
+app.get("/charu",function(req,res){
+    //三个参数，往哪个集合中增加，增加什么，增加之后做什么
+    db.insertOne("teacher",{"name":"小红"},function(err,result){
         if(err){
-            //res.write("数据库连接失败");
+            console.log("插入失败");
             return;
         }
-        //res.write("恭喜，数据库已经成功连接 \n");
-        //查询数据库，cursor游标，游标可以用each方法遍历
-        //每次表示一条document
-        var result = [];
-        var cursor = db.collection('teacher').find( );
-        cursor.each(function(err, doc) {
-            if(err){
-                //res.write("游标遍历错误");
-                return;
-            }
-            if (doc != null) {
-                result.push(doc);
-            } else {
-                //console.log(result);
-                //遍历完毕
-                db.close();
-                console.log(result)
-                res.render("index",{
-                    "result" : result
-                });
-            }
-        });
+        res.send("插入成功");
     });
 });
 
-app.get("/add",function(req,res){
-    res.render("add");
+
+//查找
+app.get("/du",function(req,res){
+    //这个页面现在接受一个page参数。
+    var page = parseInt(req.query.page);  //express中读取get参数很简单
+    //查找4个参数，在哪个集合查，查什么，分页设置，查完之后做什么
+    db.find("canguan",{},{"pageamount":6,"page":page},function(err,result){
+        if(err){
+            console.log(err);
+        }
+        res.send(result);
+        console.log(result.length);
+    });
 });
 
-app.get("/tijiao",function(req,res){
-
-    //得到参数
-    var name = req.query.name;
-    var age = req.query.age;
-    var yuwenchengji = req.query.yuwenchengji;
-    var shuxuechengji = req.query.shuxuechengji;
-
-    MongoClient.connect(shujukuURL, function(err, db) {
-        if(err){
-            console.log("数据库连接失败");
-            return;
-        }
-
-        db.collection("teacher").insertOne({
-            "name" : name,
-            "age" : age,
-            "score" : {
-                "shuxue" : shuxuechengji,
-                "yuwen" : yuwenchengji
-            }
-        },function(err,result){
-            if(err){
-                console.log("数据库写入失败");
-                return;
-            }
-            res.send("恭喜，数据已经成功插入");
-            res.end();
-            //关闭数据库
-            db.close();
-        });
+//删除
+app.get("/shan",function(req,res){
+    var borough = req.query.borough;
+    db.deleteMany("canguan",{"borough":borough},function(err,result){
+       if(err){
+           console.log(err);
+       }
+        res.send(result);
     });
+});
+
+
+//修改
+app.get("/xiugai",function(req,res){
+    db.updateMany(
+        "canguan",      //集合名字
+        {
+            "borough":"Manhattan"       //改什么
+        },
+        {
+            $set: { borough: "北京" }     //怎么改
+        },
+        function(err,result){   //改完之后做什么
+            if(err){
+                console.log(err);
+            }
+            res.send(result);
+        }
+    );
 });
 
 app.listen(3000);
